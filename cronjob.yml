@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+    namespace: mysql
+    name: kubernetes-cron-job
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: cron-batch-job
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: mysql-backup-contahouse
+            image: TBD
+
