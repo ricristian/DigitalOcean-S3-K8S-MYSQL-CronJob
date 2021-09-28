@@ -27,7 +27,7 @@ if [[ $createdAt -lt $olderThan ]]
 then
  $deleted="true"
  echo "🚨 Deleting file $fileName"
- aws s3 --endpoint=https://fra1.digitaloceanspaces.com rm s3://${S3_BUCKET}/db/$fileName
+ aws s3 --endpoint=https://$S3_URL rm s3://${S3_BUCKET}/db/$fileName
 fi;
 done
 
