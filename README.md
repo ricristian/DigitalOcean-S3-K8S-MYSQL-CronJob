@@ -1,11 +1,11 @@
 # digitalocean-s3-k8s-mysql-cronjob
 Backup mysql into s3/space from DigitalOcean
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/ricristian/digitalocean-s3-k8s-mysql-cronjob)][github-release]
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed-raw/ricristian/digitalocean-s3-k8s-mysql-cronjobr)][github-stargazers]
-![Github release workflow](https://img.shields.io/github/workflow/status/netbox-community/netbox-docker/release)
-![Docker Pulls](https://img.shields.io/docker/pulls/ricristian/digitalocean-s3-k8s-mysql-cronjob)
-[![GitHub license](https://img.shields.io/github/license/ricristian/digitalocean-s3-k8s-mysql-cronjob)][netbox-docker-license]
+![GitHub Release Date:](https://img.shields.io/github/release-date-pre/ricristian/digitalocean-s3-k8s-mysql-cronjob)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/ricristian/digitalocean-s3-k8s-mysql-cronjob)
+![Github issues](https://img.shields.io/github/issues/ricristian/digitalocean-s3-k8s-mysql-cronjob)
+![GitHub open pull requests](https://img.shields.io/github/issues-pr-raw/ricristian/digitalocean-s3-k8s-mysql-cronjob)
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed-raw/ricristian/digitalocean-s3-k8s-mysql-cronjob)
 
 ## How to 
 
