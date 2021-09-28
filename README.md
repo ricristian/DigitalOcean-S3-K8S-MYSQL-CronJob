@@ -24,3 +24,4 @@ docker run --name mysql-backup-s3 --env-file ./env ghcr.io/ricristian/digitaloce
 ## TO DO: 
 - [ ] Improve documentation
 - [ ] Add environment variables to cronjob.yml (k8s)
+- [ ] Add more running examples for different os & distributions ( mac os, linux)
