@@ -11,12 +11,16 @@ Backup mysql into s3/space from DigitalOcean
 ## How to 
 
 ### Deploy on k8s
-* Update `namespace: mysql` with your namespace
-* `kubectl apply -f cronjob.yml`
+Update `namespace: mysql` with your namespace
+
+```shell
+kubectl apply -f cronjob.yml
+```
 
 ### Run locally using docker
-* `docker run --name mysql-backup-s3 --env-file ./env ghcr.io/ricristian/digitalocean-s3-k8s-mysql-cronjob:v1.0`
-
+```sh
+docker run --name mysql-backup-s3 --env-file ./env ghcr.io/ricristian/digitalocean-s3-k8s-mysql-cronjob:v1.0
+```
 ## TO DO: 
 - [ ] Improve documentation
 - [ ] Add environment variables to cronjob.yml (k8s)
