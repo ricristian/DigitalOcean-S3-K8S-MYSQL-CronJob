@@ -1,4 +1,4 @@
-FROM python:3.8-alpine3.14
+FROM alpine:3.13.6
 
 ARG DB_HOST=mysql
 ARG DB_NAME=dbName

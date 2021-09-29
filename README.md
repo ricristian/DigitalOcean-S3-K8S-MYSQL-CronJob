@@ -1,4 +1,4 @@
-# digitalocean-s3-k8s-mysql-cronjob
+# Digital Ocean S3/Object Storage Mysql Backup ( kubernets cronjob, local script, local docker container )
 
 ![GitHub Release Date:](https://img.shields.io/github/release-date-pre/ricristian/digitalocean-s3-k8s-mysql-cronjob)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ricristian/digitalocean-s3-k8s-mysql-cronjob)
@@ -22,6 +22,7 @@ kubectl apply -f cronjob.yml
 docker run --name mysql-backup-s3 --env-file ./env ghcr.io/ricristian/digitalocean-s3-k8s-mysql-cronjob:v1.0
 ```
 ## TO DO: 
+- [ ] Replace static data retention ( 7 days ) to a dynamic variable
 - [ ] Improve documentation
 - [ ] Add environment variables to cronjob.yml (k8s)
 - [ ] Add more running examples for different os & distributions ( mac os, linux)
