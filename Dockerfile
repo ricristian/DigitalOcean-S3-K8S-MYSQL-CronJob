@@ -30,7 +30,8 @@ RUN apk -v --update add --no-cache \
 
 RUN pip install --upgrade awscli==1.18.69 python-magic
 COPY dump.sh /
-RUN chmod +X dump.sh
+RUN chmod u+r+x dump.sh
+RUN cat dump.sh
 VOLUME /data
 
 ENTRYPOINT ["/dump.sh"]
