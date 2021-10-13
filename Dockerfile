@@ -22,7 +22,7 @@ RUN echo $DB_HOST
 RUN echo $DB_NAME
 
 RUN apk -v --update add --no-cache \
-            python3-pip \
+            py3-pip \
 			bash \
 			mariadb-client \
 			openssh-client && \
