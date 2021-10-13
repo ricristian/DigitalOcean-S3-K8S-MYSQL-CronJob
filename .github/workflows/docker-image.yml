@@ -4,6 +4,9 @@ on:
   release:
     types:
       - created
+  push:
+    branches:
+      - fix/Build_image_error
 
 env:
   REGISTRY: ghcr.io
