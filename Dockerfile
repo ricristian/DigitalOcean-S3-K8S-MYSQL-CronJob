@@ -18,9 +18,6 @@ ENV S3_URL=$S3_URL
 ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
-RUN echo $DB_HOST
-RUN echo $DB_NAME
-
 RUN apk -v --update add --no-cache \
             py3-pip \
 			bash \
@@ -31,7 +28,7 @@ RUN apk -v --update add --no-cache \
 RUN pip install --upgrade awscli==1.18.69 python-magic
 COPY dump.sh /
 RUN chmod u+r+x dump.sh
-RUN cat dump.sh
+
 VOLUME /data
 
 ENTRYPOINT ["/dump.sh"]

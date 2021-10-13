@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 DB_BACKUP_PATH=/data/
 CURRENT_DATE=$(date +%F_%T)
 echo "Dump mysql db for $DB_NAME... "
