@@ -24,5 +24,6 @@ docker run --name mysql-backup-s3 --env-file ./env ghcr.io/ricristian/digitaloce
 ## TO DO: 
 - [ ] Replace static data retention ( 7 days ) to a dynamic variable
 - [ ] Improve documentation
-- [ ] Add environment variables to cronjob.yml (k8s)
+- [x] Add environment variables to cronjob.yml (k8s)
 - [ ] Add more running examples for different os & distributions ( mac os, linux)
+- [x] Test into a live k8s cluster & mysql stateful set 
