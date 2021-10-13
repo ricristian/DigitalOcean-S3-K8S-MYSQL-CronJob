@@ -14,6 +14,22 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-          - name: mysql-backup-contahouse
-            image: TBD
-
+          - name: mysql-backup
+            image: ghcr.io/ricristian/digitalocean-s3-k8s-mysql-cronjob:latest
+            env:
+              - name: DB_HOST
+                value: mysql
+              - name: DB_NAME
+                value: dbName
+              - name: DB_USER
+                value: root
+              - name: DB_PASS
+                value: password
+              - name: S3_BUCKET
+                value: bucket
+              - name: S3_URL
+                value: fra1.digitaloceanspaces.com
+              - name: AWS_ACCESS_KEY_ID
+                value: secretId
+              - name: AWS_SECRET_ACCESS_KEY
+                value: secretKey
