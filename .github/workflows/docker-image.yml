@@ -6,7 +6,9 @@ on:
       - created
   push:
     branches:
-      - fix/Build_image_error
+      - main
+  schedule:
+    - cron: "0 0 * * *"
 
 env:
   REGISTRY: ghcr.io
