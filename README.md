@@ -1,4 +1,4 @@
-# Digital Ocean S3/Object Storage Mysql Backup ( kubernets cronjob, local script, local docker container )
+# :tada: Digital Ocean S3/Object Storage Mysql Backup ( kubernets cronjob, local script, local docker container )
 
 ![GitHub Release Date:](https://img.shields.io/github/release-date-pre/ricristian/digitalocean-s3-k8s-mysql-cronjob)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ricristian/digitalocean-s3-k8s-mysql-cronjob)
