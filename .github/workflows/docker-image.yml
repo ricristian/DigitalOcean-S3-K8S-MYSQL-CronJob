@@ -4,9 +4,10 @@ on:
   release:
     types:
       - created
-#   push:
-#     branches:
-#       - main
+  push:
+    branches:
+      - main
+      - addSupportForOnlyTable
   schedule:
     - cron: "0 0 * * *"
 
