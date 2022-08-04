@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - addSupportForOnlyTable
   schedule:
     - cron: "0 0 * * *"
 
