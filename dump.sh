@@ -4,17 +4,16 @@ CURRENT_DATE=$(date +%F_%T)
 echo "Dump mysql db for $DB_NAME... "
 mysql --version
 
-if [[ -n "${ONLY_TABLE}"]]; then
+if [ -n "${ONLY_TABLE}"]; then
  SQL="SET group_concat_max_len = 10240;"
  SQL="${SQL} SELECT GROUP_CONCAT(table_name separator ' ')"
  SQL="${SQL} FROM information_schema.tables WHERE table_schema='${ONLY_TABLE}'"
  SQL="${SQL} AND table_name NOT IN ('t1','t2','t3')"
  TBLIST=`mysql -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" -AN -e"${SQL}"`
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $TBLIST --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
-elif [[ -n "${IGNORE_TABLE}" ]]; then
+elif [ -n "${IGNORE_TABLE}" ]; then
  echo "🚧 Ignoring table $IGNORE_TABLE"
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --ignore-table $DB_NAME.$IGNORE_TABLE --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
- 
 else
  echo "✅ No ignoring table(s) provided"
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
