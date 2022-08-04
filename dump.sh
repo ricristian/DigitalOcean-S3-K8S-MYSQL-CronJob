@@ -5,6 +5,7 @@ echo "Dump mysql db for $DB_NAME... "
 mysql --version
 
 if [[ -z "${IGNORE_TABLE}" ]]; then
+ echo "✅ No ignoring table(s) provided"
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
 else
  echo "🚧 Ignoring table $IGNORE_TABLE"
