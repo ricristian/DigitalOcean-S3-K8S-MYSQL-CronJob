@@ -38,7 +38,7 @@ do
 fileName=$(echo $line | awk '{print $4}')
 createdAt=`echo $line|awk {'print $1" "$2'}`
 createdAt=$(date -d"$createdAt" +%s)
-olderThan=$(($currentDate-604800))
+olderThan=$(($currentDate-7776000))
 
 if [[ $createdAt -lt $olderThan ]]
 then
