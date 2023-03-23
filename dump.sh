@@ -4,6 +4,11 @@ CURRENT_DATE=$(date +%F_%T)
 echo "Dump mysql db for $DB_NAME... "
 mysql --version
 
+IGNORE=""
+for table in $IGNORE_TABLES; do
+  IGNORE+="--ignore-table=$DB_NAME.$table "
+done
+
 if test -n "${ONLY_TABLE-}"; then
  echo "🚧 Creating backup only for table $ONLY_TABLE"
  SQL="SET group_concat_max_len = 10240;"
@@ -14,9 +19,9 @@ if test -n "${ONLY_TABLE-}"; then
  TBLIST=`mysql -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" -AN -e"${SQL}"`
  
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $TBLIST --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
-elif [[ "${IGNORE_TABLE}" ]]; then
- echo "🚧 Ignoring table $IGNORE_TABLE"
- mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --ignore-table $DB_NAME.$IGNORE_TABLE --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
+elif [[ "${IGNORE_TABLES}" ]]; then
+ echo "🚧 Ignoring table $IGNORE_TABLES"
+ mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $IGNORE --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
 else
  echo "✅Creating backup for entire database"
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
