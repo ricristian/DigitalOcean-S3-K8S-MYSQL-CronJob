@@ -44,7 +44,7 @@ aws s3 --endpoint=https://$S3_URL ls $S3_BUCKET/db/ | while read -r line; do
   fileName=$(echo $line | awk '{print $4}')
   createdAt=$(echo $line | awk '{print $1" "$2}')
   createdAt=$(date -d "$createdAt" +%s)
-  fileAge=$(( (currentDate - createdAt) / (24*60*60) ))
+  fileAge=$(( ($currentDate - $createdAt) / (24*60*60) ))
 
   # Extract the number of days from the file name
   fileAgeFromName=$(echo $fileName | awk -F'[-.]' '{print $(NF-1)}')
