@@ -21,40 +21,43 @@ if test -n "${ONLY_TABLE-}"; then
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $TBLIST --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
 elif [[ "${IGNORE_TABLES}" ]]; then
  echo "🚧 Ignoring table $IGNORE_TABLES"
- mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $IGNORE --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
+ mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $IGNORE --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql
+ echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql) to s3 ..."
+ aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql s3://${S3_BUCKET}/db/
 else
  echo "✅Creating backup for entire database"
- mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
+ mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-90.sql
+ echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql) to s3 ..."
+ aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-90.sql s3://${S3_BUCKET}/db/
 fi
 
-
-echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql) to s3 ..."
-aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql s3://${S3_BUCKET}/db/
 
 echo "✅ Backup finished successfully"
 
 deleted="false"
-echo "⚠️ Check for files older than 7 days ..."
+echo "⚠️ Check for files older than X days ..."
 
 cd /data
 currentDate=$(date +%s)
-aws s3 --endpoint=https://$S3_URL ls $DB_NAME/db/ | while read -r line;
-do
-fileName=$(echo $line | awk '{print $4}')
-createdAt=`echo $line|awk {'print $1" "$2'}`
-createdAt=$(date -d"$createdAt" +%s)
-olderThan=$(($currentDate-7776000))
 
-if [[ $createdAt -lt $olderThan ]]
-then
- deleted="true"
- echo "🚨 Deleting file $fileName"
- aws s3 --endpoint=https://$S3_URL rm s3://${S3_BUCKET}/db/$fileName
-fi;
+aws s3 --endpoint=https://$S3_URL ls $S3_BUCKET/db/ | while read -r line; do
+  fileName=$(echo $line | awk '{print $4}')
+  createdAt=$(echo $line | awk '{print $1" "$2}')
+  createdAt=$(date -d "$createdAt" +%s)
+  fileAge=$(( (currentDate - createdAt) / (24*60*60) ))
+
+  # Extract the number of days from the file name
+  fileAgeFromName=$(echo $fileName | awk -F'[-.]' '{print $(NF-1)}')
+
+  # Check if the file is older than the specified number of days
+  if [[ $fileAge -gt $fileAgeFromName ]]; then
+    deleted="true"
+    echo "🚨 Deleting file $fileName"
+    aws s3 --endpoint=https://$S3_URL rm s3://$S3_BUCKET/db/$fileName
+  fi
 done
 
-if [[ $deleted == "false" ]]
-then
+if [[ $deleted == "false" ]]; then
   echo "✅ Nothing to delete"
 fi
 
