@@ -26,7 +26,7 @@ elif [[ "${IGNORE_TABLES}" ]]; then
  aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql s3://${S3_BUCKET}/db/
 else
  echo "✅Creating backup for entire database"
- mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --verbose  | gzip > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-90.sql
+ mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --verbose  | gzip > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-90.sql.gz
  echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql) to s3 ..."
  aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-90.sql s3://${S3_BUCKET}/db/
 fi
