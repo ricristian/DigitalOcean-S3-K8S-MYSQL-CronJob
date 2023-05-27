@@ -21,13 +21,13 @@ if test -n "${ONLY_TABLE-}"; then
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $TBLIST --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE.sql
 elif [[ "${IGNORE_TABLES}" ]]; then
  echo "🚧 Ignoring table $IGNORE_TABLES"
- mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $IGNORE --verbose > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql
- echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql) to s3 ..."
- aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql s3://${S3_BUCKET}/db/
+ mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $IGNORE --verbose | gzip -9 > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql.gz
+ echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql.gz) to s3 ..."
+ aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql.gz s3://${S3_BUCKET}/db/
 else
  echo "✅Creating backup for entire database"
- mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --verbose  | gzip -8 > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-90.sql.gz
- echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql) to s3 ..."
+ mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --verbose | gzip -9 > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-90.sql.gz
+ echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql.gz) to s3 ..."
  aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-90.sql.gz s3://${S3_BUCKET}/db/
 fi
 
