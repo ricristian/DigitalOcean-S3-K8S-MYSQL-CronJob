@@ -47,10 +47,10 @@ aws s3 --endpoint=https://$S3_URL ls $S3_BUCKET/db/ | while read -r line; do
   fileAge=$(( ($currentDate - $createdAt) / (24*60*60) ))
 
   # Extract the number of days from the file name
-  fileAgeFromName=$(echo $fileName | awk -F'[-.]' '{print $(NF-1)}')
+  retentionDays=$(echo $fileName | awk -F'[-.]' '{print $(NF-2)}')
 
   # Check if the file is older than the specified number of days
-  if [[ $fileAge -gt $fileAgeFromName ]]; then
+  if [[ $fileAge -gt $retentionDays ]]; then
     deleted="true"
     echo "🚨 Deleting file $fileName"
     aws s3 --endpoint=https://$S3_URL rm s3://$S3_BUCKET/db/$fileName
