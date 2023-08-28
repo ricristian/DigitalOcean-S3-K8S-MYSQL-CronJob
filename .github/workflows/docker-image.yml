@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - add-file-retention-age-to-pattern
   schedule:
     - cron: "0 0 * * *"
 
