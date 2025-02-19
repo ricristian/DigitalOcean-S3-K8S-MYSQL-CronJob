@@ -31,6 +31,10 @@ else
  aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-730.sql.gz s3://${S3_BUCKET}/db/
 fi
 
+if [[ "${MATTERMOST_WEBHOOK_URL}" ]]; then
+  echo "✅Sending notification to mattermost"
+  curl "${MATTERMOST_WEBHOOK_URL}" --header "Content-Type: application/json" --data "{\"text\": \"Database ${DB_NAME}-${CURRENT_DATE} backup finalized successfully 🦭\n Driver: mysql\n Triggered: bash-script \"}"
+fi
 
 echo "✅ Backup finished successfully"
 
