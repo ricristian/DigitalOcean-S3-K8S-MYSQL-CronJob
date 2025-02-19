@@ -19,10 +19,11 @@ ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
 RUN apk -v --update add --no-cache \
-            py3-pip \
-			bash \
-			mariadb-client \
-			openssh-client && \
+            	py3-pip \
+		bash \
+		curl \
+		mariadb-client \
+		openssh-client && \
         rm -f /var/cache/apk/*
 
 RUN pip install --upgrade awscli==1.18.69 python-magic
