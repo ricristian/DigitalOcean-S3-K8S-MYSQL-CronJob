@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 DB_BACKUP_PATH=/data/
 CURRENT_DATE=$(date +%F_%T)
+CURRENT_YEAR=$(date +%Y)
 echo "Dump mysql db for $DB_NAME... "
 mysql --version
 
@@ -23,12 +24,12 @@ elif [[ "${IGNORE_TABLES}" ]]; then
  echo "🚧 Ignoring table $IGNORE_TABLES"
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME $IGNORE --skip-lock-tables --verbose | gzip > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql.gz
  echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql.gz) to s3 ..."
- aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql.gz s3://${S3_BUCKET}/db/
+ aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql.gz s3://${S3_BUCKET}/db/${CURRENT_YEAR}/
 else
  echo "✅Creating backup for entire database"
  mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --skip-lock-tables --verbose | gzip > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-730.sql.gz
  echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql.gz) to s3 ..."
- aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-730.sql.gz s3://${S3_BUCKET}/db/
+ aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-730.sql.gz s3://${S3_BUCKET}/db/${CURRENT_YEAR}/
 fi
 
 if [[ "${MATTERMOST_WEBHOOK_URL}" ]]; then
@@ -44,21 +45,25 @@ echo "⚠️ Check for files older than X days ..."
 cd /data
 currentDate=$(date +%s)
 
-aws s3 --endpoint=https://$S3_URL ls $S3_BUCKET/db/ | while read -r line; do
-  fileName=$(echo $line | awk '{print $4}')
-  createdAt=$(echo "$line" | awk '{print $4}' | awk -F'[-_.]' '{print $2"-"$3"-"$4" "$5}')
-  createdAt=$(date -d "$createdAt" +%s)
-  fileAge=$(( ($currentDate - $createdAt) / (24*60*60) ))
+# List all year folders and process files within each
+aws s3 --endpoint=https://$S3_URL ls s3://$S3_BUCKET/db/ | grep PRE | awk '{print $2}' | sed 's/\///' | while read -r year; do
+  echo "Processing year: $year"
+  aws s3 --endpoint=https://$S3_URL ls s3://$S3_BUCKET/db/${year}/ | while read -r line; do
+    fileName=$(echo $line | awk '{print $4}')
+    createdAt=$(echo "$line" | awk '{print $4}' | awk -F'[-_.]' '{print $2"-"$3"-"$4" "$5}')
+    createdAt=$(date -d "$createdAt" +%s)
+    fileAge=$(( ($currentDate - $createdAt) / (24*60*60) ))
 
-  # Extract the number of days from the file name
-  retentionDays=$(echo $fileName | awk -F'[-.]' '{print $(NF-2)}')
+    # Extract the number of days from the file name
+    retentionDays=$(echo $fileName | awk -F'[-.]' '{print $(NF-2)}')
 
-  # Check if the file is older than the specified number of days
-  if [[ $fileAge -ge $retentionDays ]]; then
-    deleted="true"
-    echo "🚨 Deleting file $fileName"
-    aws s3 --endpoint=https://$S3_URL rm s3://$S3_BUCKET/db/$fileName
-  fi
+    # Check if the file is older than the specified number of days
+    if [[ $fileAge -ge $retentionDays ]]; then
+      deleted="true"
+      echo "🚨 Deleting file $fileName from year $year"
+      aws s3 --endpoint=https://$S3_URL rm s3://$S3_BUCKET/db/${year}/$fileName
+    fi
+  done
 done
 
 if [[ $deleted == "false" ]]; then
