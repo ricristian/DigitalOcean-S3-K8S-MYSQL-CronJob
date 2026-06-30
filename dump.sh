@@ -54,11 +54,10 @@ aws s3 --endpoint=https://$S3_URL ls s3://$S3_BUCKET/db/ | grep PRE | awk '{prin
     createdAt=$(date -d "$createdAt" +%s)
     fileAge=$(( ($currentDate - $createdAt) / (24*60*60) ))
 
-   # retention = the digit group in the LAST "-NNN." before the extension
-    retentionDays=$(echo "$fileName" | grep -oE '\-[0-9]+\.' | tail -1 | tr -d '-.')
-
-    echo "Deleting file fileName=$fileName => createdAt=$createdAt => fileAge=$fileAge => retentionDays=$retentionDays"
-
+    retentionDays=$(echo "$fileName" | sed 's/.*-\([0-9]\+\)\..*/\1/')
+    
+    echo "Parsing file fileName=$fileName => createdAt=$createdAt => fileAge=$fileAge => retentionDays=$retentionDays"
+    
     # Check if the file is older than the specified number of days
     if [[ $fileAge -ge $retentionDays ]]; then
       deleted="true"
