@@ -54,8 +54,8 @@ aws s3 --endpoint=https://$S3_URL ls s3://$S3_BUCKET/db/ | grep PRE | awk '{prin
     createdAt=$(date -d "$createdAt" +%s)
     fileAge=$(( ($currentDate - $createdAt) / (24*60*60) ))
 
-    # Extract the number of days from the file name
-    retentionDays=$(echo $fileName | awk -F'[-.]' '{print $(NF-2)}')
+   # retention = the digit group in the LAST "-NNN." before the extension
+    retentionDays=$(echo "$fileName" | grep -oE '\-[0-9]+\.' | tail -1 | tr -d '-.')
 
     echo "Deleting file fileName=$fileName => createdAt=$createdAt => fileAge=$fileAge => retentionDays=$retentionDays"
 
