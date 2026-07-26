@@ -48,7 +48,7 @@ currentDate=$(date +%s)
 # List all year folders and process files within each
 aws s3 --endpoint=https://$S3_URL ls s3://$S3_BUCKET/db/ | grep PRE | awk '{print $2}' | sed 's/\///' | while read -r year; do
   echo "Processing year: $year"
-  aws s3 --endpoint=https://$S3_URL ls s3://$S3_BUCKET/db/${year}/ | while read -r line; do
+  aws s3 --endpoint=https://$S3_URL ls s3://$S3_BUCKET/db/${year}/ | grep -i .sql | while read -r line; do
     fileName=$(echo $line | awk '{print $4}')
     createdAt=$(echo "$line" | awk '{print $4}' | awk -F'[-_.]' '{print $2"-"$3"-"$4" "$5}')
     createdAt=$(date -d "$createdAt" +%s)
