@@ -22,7 +22,7 @@ kubectl apply -f cronjob.yml
 docker run --name mysql-backup-s3 --env-file ./env ghcr.io/ricristian/digitalocean-s3-k8s-mysql-cronjob:v1.0
 ```
 ## TO DO: 
-- [ ] Replace static data retention ( 7 days ) to a dynamic variable
+- [x] Replace static data retention to a dynamic variable ( `RETENTION_DAYS`, default 730 days )
 - [ ] Improve documentation
 - [x] Add environment variables to cronjob.yml (k8s)
 - [ ] Add more running examples for different os & distributions ( mac os, linux)

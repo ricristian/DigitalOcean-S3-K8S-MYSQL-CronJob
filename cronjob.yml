@@ -33,3 +33,6 @@ spec:
                 value: secretId
               - name: AWS_SECRET_ACCESS_KEY
                 value: secretKey
+              # Optional: days to keep the full dumps (default 730)
+              - name: RETENTION_DAYS
+                value: "730"

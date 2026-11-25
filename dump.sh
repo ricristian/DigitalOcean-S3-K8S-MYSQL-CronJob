@@ -2,6 +2,14 @@
 DB_BACKUP_PATH=/data/
 CURRENT_DATE=$(date +%F_%T)
 CURRENT_YEAR=$(date +%Y)
+
+# How many days the full dumps of DB_NAME are kept
+RETENTION_DAYS=${RETENTION_DAYS:-730}
+if ! [[ $RETENTION_DAYS =~ ^[1-9][0-9]*$ ]]; then
+  echo "❌ RETENTION_DAYS must be a positive number of days, got '$RETENTION_DAYS'"
+  exit 1
+fi
+
 echo "Dump mysql db for $DB_NAME... "
 mysql --version
 
@@ -27,9 +35,9 @@ elif [[ "${IGNORE_TABLES}" ]]; then
  aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-2.sql.gz s3://${S3_BUCKET}/db/${CURRENT_YEAR}/
 else
  echo "✅Creating backup for entire database"
- mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --skip-lock-tables --verbose | gzip > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-730.sql.gz
+ mysqldump -h "$DB_HOST" -u $DB_USER -p"$DB_PASS" $DB_NAME --skip-lock-tables --verbose | gzip > $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-$RETENTION_DAYS.sql.gz
  echo "🚧 Uploading mysql dump ($DB_NAME-$CURRENT_DATE.sql.gz) to s3 ..."
- aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-730.sql.gz s3://${S3_BUCKET}/db/${CURRENT_YEAR}/
+ aws s3 --endpoint=https://$S3_URL cp $DB_BACKUP_PATH/$DB_NAME-$CURRENT_DATE-$RETENTION_DAYS.sql.gz s3://${S3_BUCKET}/db/${CURRENT_YEAR}/
 fi
 
 if [[ "${MATTERMOST_WEBHOOK_URL}" ]]; then
@@ -55,6 +63,11 @@ aws s3 --endpoint=https://$S3_URL ls s3://$S3_BUCKET/db/ | grep PRE | awk '{prin
     fileAge=$(( ($currentDate - $createdAt) / (24*60*60) ))
 
     retentionDays=$(echo "$fileName" | sed 's/.*-\([0-9]\+\)\..*/\1/')
+
+    # RETENTION_DAYS also caps the older dumps of this database, which carry a longer retention in their name
+    if [[ $fileName == "$DB_NAME"-* && $retentionDays =~ ^[0-9]+$ && $retentionDays -gt $RETENTION_DAYS ]]; then
+      retentionDays=$RETENTION_DAYS
+    fi
     
     echo "Parsing file fileName=$fileName => createdAt=$createdAt => fileAge=$fileAge => retentionDays=$retentionDays"
     
